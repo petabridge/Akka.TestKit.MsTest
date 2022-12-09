@@ -14,7 +14,6 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.DocFX.DocFXTasks;
-using System.Text.Json;
 using System.IO;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using Nuke.Common.ChangeLog;
@@ -27,6 +26,9 @@ using Nuke.Common.Utilities;
 using Nuke.Common.CI.GitHubActions;
 using Project = Nuke.Common.ProjectModel.Project;
 using System.Threading.Tasks;
+using Nuke.Common.Tools.MSBuild;
+using static Nuke.Common.Tools.MSBuild.MSBuildTasks;
+
 
 [ShutdownDotNetAfterServerBuild]
 [DotNetVerbosityMapping]
@@ -405,8 +407,9 @@ partial class Build : NukeBuild
         .Executes(() =>
         {
             var version = ReleaseNotes.Version.ToString();
+            var p = Solution.GetProjects("*.Tests").ToList().First().ToString();
             DotNetBuild(s => s
-                .SetProjectFile(Solution)
+                .SetProjectFile(p)
                 .SetConfiguration(Configuration)
                 .EnableNoRestore());
         });
